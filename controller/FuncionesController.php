@@ -55,7 +55,7 @@ function iniciarSesion() {
             $usuario = $resultado->fetch_assoc();
             $_SESSION['usuario'] = $usuario['email'];
             $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'];
-            $_SESSION['id'] = $usuario['tipo_usuario'];
+            $_SESSION['id'] = $usuario['id_usuario'];
 
             $response["ok"] = 0;
             $response["okRef"] = 0;
@@ -192,6 +192,6 @@ function cerrarSesion() {
 
     session_destroy();
 
-    echo json_encode(array("mensaje" => "Sesión cerrada exitosamente"));
+    echo json_encode(array("ok" => 0, "mensaje" => "Sesión cerrada correctamente"));
 }
 ?>

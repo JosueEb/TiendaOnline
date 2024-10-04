@@ -46,10 +46,13 @@ if (isset($_SESSION['usuario'])) {
 
         <link href="admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
 
+            <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     </head>
     <body>
         <!-- Navigation-->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
             <div class="container px-4 px-lg-5">
                 <a class="navbar-brand" href="index.php">Tienda</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
@@ -159,9 +162,9 @@ if (isset($_SESSION['usuario'])) {
                                         <td><img src="' . $imagen_url . '" alt="' . $nombre . '" width="50"></td>
                                         <td>' . $nombre . '</td>
                                         <td>
-                                            <button class="btn btn-sm btn-secondary restarCantidad" data-id="' . $id_carrito . '">-</button>
+                                            <button class="btn btn-sm btn-danger restarCantidad" data-id="' . $id_carrito . '">-</button>
                                             ' . $cantidad . '
-                                            <button class="btn btn-sm btn-secondary agregarCantidad" data-id="' . $id_carrito . '">+</button>
+                                            <button class="btn btn-sm btn-success agregarCantidad" data-id="' . $id_carrito . '">+</button>
                                         </td>
                                         <td>$' . number_format($precio, 2) . '</td>
                                         <td>$' . number_format($total_parcial, 2) . '</td>
@@ -206,9 +209,9 @@ if (isset($_SESSION['usuario'])) {
                                                     <h5 class="card-title">' . $nombre . '</h5>
                                                     <p class="card-text"><strong>Precio Unitario:</strong> $' . number_format($precio, 2) . '</p>
                                                     <p class="card-text"><strong>Cantidad:</strong> 
-                                                        <button class="btn btn-sm btn-secondary restarCantidad" data-id="' . $id_carrito . '">-</button>
+                                                        <button class="btn btn-sm btn-danger restarCantidad" data-id="' . $id_carrito . '">-</button>
                                                         ' . $cantidad . '
-                                                        <button class="btn btn-sm btn-secondary agregarCantidad" data-id="' . $id_carrito . '">+</button>
+                                                        <button class="btn btn-sm btn-success agregarCantidad" data-id="' . $id_carrito . '">+</button>
                                                     </p>
                                                     <p class="card-text"><strong>Total Parcial:</strong> $' . number_format($total_parcia, 2) . '</p>
                                                     <button class="btn btn-danger btn-sm eliminarArticulo" data-id="' . $id_carrito . '">
@@ -283,17 +286,52 @@ if (isset($_SESSION['usuario'])) {
     });
 
     document.querySelectorAll('.restarCantidad').forEach(button => {
-        button.addEventListener('click', function() {
-            const id_carrito = this.getAttribute('data-id');
+    button.addEventListener('click', function() {
+        const id_carrito = this.getAttribute('data-id');
+        const cantidadElement = this.nextSibling; // Elemento con la cantidad actual
+        let cantidad = parseInt(cantidadElement.textContent.trim());
+
+        if (cantidad === 1) {
+            Swal.fire({
+                title: '¿Quieres eliminar este artículo del carrito?',
+                text: "La cantidad es 1, al restar se eliminará.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    actualizarCantidad(id_carrito, 'restar');
+                }
+            });
+        } else {
             actualizarCantidad(id_carrito, 'restar');
-        });
+        }
     });
+});
+
 
     // Manejar eliminar artículo
     document.querySelectorAll('.eliminarArticulo').forEach(button => {
         button.addEventListener('click', function() {
             const id_carrito = this.getAttribute('data-id');
-            eliminarArticulo(id_carrito);
+
+            Swal.fire({
+                title: '¿Quieres eliminar este artículo del carrito?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    eliminarArticulo(id_carrito);
+                }
+            });
+            
         });
     });
 

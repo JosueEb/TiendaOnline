@@ -91,7 +91,7 @@ else {
                         <!-- Input para subir la imagen -->
                         <div class="form-group">
                             <label for="imagen">Subir Imagen del Artículo</label>
-                            <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*" required>
+                            <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*" >
                         </div>
                         <hr>
 

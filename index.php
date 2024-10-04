@@ -45,10 +45,11 @@ if (isset($_SESSION['usuario'])) {
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="admin/css/sb-admin-2.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </head>
     <body>
         <!-- Navigation-->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
             <div class="container px-4 px-lg-5">
                 <a class="navbar-brand" href="index.php">Tienda</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
@@ -129,7 +130,7 @@ if (isset($_SESSION['usuario'])) {
                                     <!-- Acciones del producto -->
                                     <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                                         <div class="text-center">
-                                            <a class="btn btn-outline-dark mt-auto" onclick="agregarCarrito(' . $id_articulo . ')" href="#">Agregar al carrito</a>
+                                            <a class="btn btn-outline-dark mt-auto" onclick="agregarCarrito(' .  $id_articulo . ', event)">Agregar al carrito</a>
                                         </div>
                                     </div>
                                 </div>
@@ -156,11 +157,23 @@ if (isset($_SESSION['usuario'])) {
     </body>
 
 <script>
-function agregarCarrito(id_articulo) {
+function agregarCarrito(id_articulo, e) {
+    e.preventDefault();
     var usuario=<?php echo $id; ?>;
     if (usuario === 0){
-        alert("Inicia sesión para poder agregar articulos al carro");
-        window.location.href="login.html";
+        Swal.fire({
+                title: 'No has iniciado sesión',
+                icon: 'warning',
+                confirmButtonColor: '#3085d6',
+                // cancelButtonColor: '#d33',
+                confirmButtonText: 'Ir a iniciar sesión',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href="login.html";
+
+                }
+            });
+        // alert("Inicia sesión para poder agregar articulos al carro");
         return;
 
     }
@@ -182,7 +195,11 @@ function agregarCarrito(id_articulo) {
     .then(data => {
         // Verificar la respuesta del servidor
         if (data.ok === 0) {
-            // location.reload();
+            const badge = document.querySelector('.badge.bg-dark');
+            if (badge) {
+                const num_items = parseInt(badge.textContent) || 0;
+                badge.textContent = num_items + 1; // Aumentar en 1
+            }
         } else {
             alert(data.mensaje); // Mensaje de error
         }

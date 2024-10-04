@@ -38,6 +38,14 @@ if (isset($_POST['funcion'])) {
             eliminarArticuloCarrito();
             break;
 
+        case 'guardarAlmacen':
+            guardarAlmacen();
+            break;
+
+        case 'actualizarAlmacen':
+            actualizarAlmacen();
+            break;
+
         default:
             echo json_encode(array("mensaje" => "Función no válida"));
             break;
@@ -459,7 +467,75 @@ function eliminarArticuloCarrito() {
 }
 
 
+function guardarAlmacen() {
+    global $conexion;
 
+    if (isset($_POST['nombre_almacen']) && isset($_POST['ubicacion']) && isset($_POST['estatus'])) {
+        $nombre_almacen = $_POST['nombre_almacen'];
+        $ubicacion = $_POST['ubicacion'];
+        $estatus = $_POST['estatus'];
+
+        // Preparar la consulta SQL para insertar el nuevo almacén
+        $sql = "INSERT INTO almacenes (nombre_almacen, ubicacion, estatus) VALUES (?, ?, ?)";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param('sss', $nombre_almacen, $ubicacion, $estatus);
+
+        // Ejecutar la consulta
+        if ($stmt->execute()) {
+            // Enviar respuesta de éxito en formato JSON
+            echo json_encode([
+                "ok" => 0,
+                "mensaje" => "Almacén guardado correctamente."
+            ]);
+        } else {
+            // Enviar respuesta de error en formato JSON
+            echo json_encode([
+                "ok" => 1,
+                "mensaje" => "Error al guardar el almacén."
+            ]);
+        }
+
+        $stmt->close();
+    } else {
+        echo json_encode([
+            "ok" => 1,
+            "mensaje" => "Faltan datos para registrar el almacén."
+        ]);
+    }
+}
+function actualizarAlmacen()
+{
+    global $conexion;
+    if (isset($_POST['id_almacen'], $_POST['nombre_almacen'], $_POST['ubicacion'], $_POST['estatus'])) {
+        $id_almacen = intval($_POST['id_almacen']); // ID del almacén
+        $nombre_almacen = trim($_POST['nombre_almacen']);
+        $ubicacion = trim($_POST['ubicacion']);
+        $estatus = $_POST['estatus'];
+
+        $sql = "UPDATE almacenes SET nombre_almacen = ?, ubicacion = ?, estatus = ? WHERE id_almacen = ?";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param('sssi', $nombre_almacen, $ubicacion, $estatus, $id_almacen);
+
+        if ($stmt->execute()) {
+            echo json_encode([
+                "ok" => 0,
+                "mensaje" => "Almacén actualizado correctamente."
+            ]);
+        } else {
+            echo json_encode([
+                "ok" => 1,
+                "mensaje" => "Error al actualizar el almacén."
+            ]);
+        }
+
+        $stmt->close();
+    } else {
+        echo json_encode([
+            "ok" => 1,
+            "mensaje" => "Faltan datos para actualizar el almacén."
+        ]);
+    }
+}
 
 
 ?>

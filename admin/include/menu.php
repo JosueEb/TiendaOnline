@@ -51,7 +51,7 @@
 
             <!-- Nav Item - Charts -->
             <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="Almacenes.php">
                     <i class="fas fa-fw fa-warehouse"></i>
                     <span>Almacenes</span></a>
             </li>
